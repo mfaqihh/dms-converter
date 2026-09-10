@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type MutableRefObject } from 'react'
 import Map from 'ol/Map'
 import View from 'ol/View'
 import TileLayer from 'ol/layer/Tile'
@@ -43,6 +43,25 @@ export function MapView({ points, onMapClick, onPointClick }: MapViewProps) {
   const mapRef = useRef<Map | null>(null)
   const vectorSourceRef = useRef<VectorSource>(new VectorSource())
 
+  /**
+   * Refs that keep the latest prop values accessible inside the map
+   * click handler without re-registering the listener on every render.
+   */
+  const pointsRef = useRef(points) as MutableRefObject<MapPoint[]>
+  const onMapClickRef = useRef(onMapClick)
+  const onPointClickRef = useRef(onPointClick)
+
+  // Sync refs to the latest prop values on every render.
+  useEffect(() => {
+    pointsRef.current = points
+  })
+  useEffect(() => {
+    onMapClickRef.current = onMapClick
+  })
+  useEffect(() => {
+    onPointClickRef.current = onPointClick
+  })
+
   // Initialize the map once.
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
@@ -52,8 +71,8 @@ export function MapView({ points, onMapClick, onPointClick }: MapViewProps) {
       style: new Style({
         image: new CircleStyle({
           radius: 8,
-          fill: new Fill({ color: '#facc15' }),
-          stroke: new Stroke({ color: '#1f2937', width: 2 }),
+          fill: new Fill({ color: '#ffffff' }),
+          stroke: new Stroke({ color: '#000000', width: 2 }),
         }),
       }),
     })
@@ -74,17 +93,19 @@ export function MapView({ points, onMapClick, onPointClick }: MapViewProps) {
       )
 
       if (clickedFeature) {
+        // Read from ref so we always have the latest points list,
+        // even though this handler is only registered once.
         const id = clickedFeature.get('pointId') as string | undefined
-        const point = points.find((p) => p.id === id)
-        if (point && onPointClick) {
-          onPointClick(point)
+        const point = pointsRef.current.find((p) => p.id === id)
+        if (point && onPointClickRef.current) {
+          onPointClickRef.current(point)
         }
         return
       }
 
-      if (onMapClick) {
+      if (onMapClickRef.current) {
         const [lon, lat] = toLonLat(event.coordinate)
-        onMapClick(lon, lat)
+        onMapClickRef.current(lon, lat)
       }
     })
 
@@ -94,7 +115,7 @@ export function MapView({ points, onMapClick, onPointClick }: MapViewProps) {
       map.setTarget(undefined)
       mapRef.current = null
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Map is initialized once; callbacks and points are accessed via refs.
   }, [])
 
   // Redraw markers whenever points change, and recenter on the latest one.

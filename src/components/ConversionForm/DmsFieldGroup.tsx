@@ -1,5 +1,6 @@
 import type { ChangeEvent } from 'react'
 import type { DMSValue } from '../../types/coordinate'
+import { Input, Select, Label } from '../ui'
 
 /**
  * Props for {@link DmsFieldGroup}.
@@ -20,9 +21,11 @@ export interface DmsFieldGroupProps {
 }
 
 /**
- * A labeled group of degree / minute / second number inputs plus a
- * compass-direction selector, used for entering one DMS value
- * (latitude or longitude) in the conversion form.
+ * A labeled group of Degrees / Minutes / Seconds inputs plus a
+ * compass-direction selector for one DMS axis (latitude or longitude).
+ *
+ * Each sub-field has its own `<Label>` so the layout is self-documenting
+ * and accessible without extra ARIA attributes.
  */
 export function DmsFieldGroup({
   label,
@@ -32,6 +35,8 @@ export function DmsFieldGroup({
   directionOptions,
   onDirectionChange,
 }: DmsFieldGroupProps) {
+  const id = label.toLowerCase()
+
   const handleFieldChange =
     (field: keyof DMSValue) => (event: ChangeEvent<HTMLInputElement>) => {
       const numeric = Number(event.target.value)
@@ -39,46 +44,91 @@ export function DmsFieldGroup({
     }
 
   return (
-    <div className="flex items-center justify-between gap-2 py-2">
-      <label className="text-sm text-slate-300">{label}</label>
-      <div className="flex items-center gap-1">
-        <input
-          type="number"
-          aria-label={`${label} degrees`}
-          value={value.degrees}
-          onChange={handleFieldChange('degrees')}
-          className="w-14 rounded bg-slate-700 px-1.5 py-1 text-right text-sm text-white outline-none focus:ring-1 focus:ring-emerald-400"
-        />
-        <span className="text-slate-400">°</span>
-        <input
-          type="number"
-          aria-label={`${label} minutes`}
-          value={value.minutes}
-          onChange={handleFieldChange('minutes')}
-          className="w-12 rounded bg-slate-700 px-1.5 py-1 text-right text-sm text-white outline-none focus:ring-1 focus:ring-emerald-400"
-        />
-        <span className="text-slate-400">'</span>
-        <input
-          type="number"
-          aria-label={`${label} seconds`}
-          value={value.seconds}
-          onChange={handleFieldChange('seconds')}
-          className="w-14 rounded bg-slate-700 px-1.5 py-1 text-right text-sm text-white outline-none focus:ring-1 focus:ring-emerald-400"
-        />
-        <span className="text-slate-400">"</span>
-        <select
-          aria-label={`${label} direction`}
-          value={direction}
-          onChange={(event) => onDirectionChange(event.target.value)}
-          className="ml-1 rounded bg-slate-700 px-1 py-1 text-sm text-white outline-none focus:ring-1 focus:ring-emerald-400"
-        >
-          {directionOptions.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+    <fieldset className="space-y-2 rounded-md border border-zinc-800 p-3">
+      {/* Section title */}
+      <legend className="px-1">
+        <Label>{label}</Label>
+      </legend>
+
+      {/* 4-column grid: Deg | Min | Sec | Dir */}
+      <div className="grid grid-cols-4 gap-2">
+        {/* Degrees */}
+        <div className="space-y-1.5">
+          <Label htmlFor={`${id}-deg`}>Deg</Label>
+          <div className="relative">
+            <Input
+              id={`${id}-deg`}
+              type="number"
+              aria-label={`${label} degrees`}
+              value={value.degrees}
+              min={0}
+              onChange={handleFieldChange('degrees')}
+              className="pr-5 text-right"
+            />
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-600">
+              °
+            </span>
+          </div>
+        </div>
+
+        {/* Minutes */}
+        <div className="space-y-1.5">
+          <Label htmlFor={`${id}-min`}>Min</Label>
+          <div className="relative">
+            <Input
+              id={`${id}-min`}
+              type="number"
+              aria-label={`${label} minutes`}
+              value={value.minutes}
+              min={0}
+              max={59}
+              onChange={handleFieldChange('minutes')}
+              className="pr-5 text-right"
+            />
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-600">
+              ′
+            </span>
+          </div>
+        </div>
+
+        {/* Seconds */}
+        <div className="space-y-1.5">
+          <Label htmlFor={`${id}-sec`}>Sec</Label>
+          <div className="relative">
+            <Input
+              id={`${id}-sec`}
+              type="number"
+              aria-label={`${label} seconds`}
+              value={value.seconds}
+              min={0}
+              max={59.999}
+              step={0.001}
+              onChange={handleFieldChange('seconds')}
+              className="pr-5 text-right"
+            />
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-600">
+              ″
+            </span>
+          </div>
+        </div>
+
+        {/* Direction */}
+        <div className="space-y-1.5">
+          <Label htmlFor={`${id}-dir`}>Dir</Label>
+          <Select
+            id={`${id}-dir`}
+            aria-label={`${label} direction`}
+            value={direction}
+            onChange={(event) => onDirectionChange(event.target.value)}
+          >
+            {directionOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </Select>
+        </div>
       </div>
-    </div>
+    </fieldset>
   )
 }

@@ -1,4 +1,5 @@
 import type { ChangeEvent } from 'react'
+import { Input, Label } from '../ui'
 
 /**
  * Props for {@link DdFieldGroup}.
@@ -13,29 +14,40 @@ export interface DdFieldGroupProps {
 }
 
 /**
- * A labeled decimal-degree number input, used for entering one DD
- * value (latitude or longitude) in the conversion form.
+ * A labeled decimal-degree number input for one DD axis
+ * (latitude or longitude) in the conversion form.
  */
 export function DdFieldGroup({ label, value, onChange }: DdFieldGroupProps) {
+  const id = `dd-${label.toLowerCase()}`
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const numeric = Number(event.target.value)
     onChange(Number.isNaN(numeric) ? 0 : numeric)
   }
 
   return (
-    <div className="flex items-center justify-between gap-2 py-2">
-      <label className="text-sm text-slate-300">{label}</label>
-      <div className="flex items-center gap-1">
-        <input
-          type="number"
-          step="0.000001"
-          aria-label={`${label} decimal degrees`}
-          value={value}
-          onChange={handleChange}
-          className="w-32 rounded bg-slate-700 px-1.5 py-1 text-right text-sm text-white outline-none focus:ring-1 focus:ring-emerald-400"
-        />
-        <span className="text-slate-400">deg</span>
+    <fieldset className="space-y-2 rounded-md border border-zinc-800 p-3">
+      <legend className="px-1">
+        <Label>{label}</Label>
+      </legend>
+
+      <div className="space-y-1.5">
+        <Label htmlFor={id}>Decimal Degrees</Label>
+        <div className="relative">
+          <Input
+            id={id}
+            type="number"
+            step="0.000001"
+            aria-label={`${label} decimal degrees`}
+            value={value}
+            onChange={handleChange}
+            className="pr-6 text-right"
+          />
+          <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-sm font-bold text-zinc-500">
+            °
+          </span>
+        </div>
       </div>
-    </div>
+    </fieldset>
   )
 }
