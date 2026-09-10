@@ -3,6 +3,10 @@ import type { LabelHTMLAttributes } from 'react'
 
 export type LabelProps = LabelHTMLAttributes<HTMLLabelElement>
 
+/**
+ * Small uppercase label for form fields.
+ * Always pair with an input via `htmlFor` for accessibility.
+ */
 export const Label = forwardRef<HTMLLabelElement, LabelProps>(
   ({ className = '', children, ...props }, ref) => (
     <label

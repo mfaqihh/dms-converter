@@ -1,20 +1,20 @@
 import { Plus, X } from 'lucide-react'
 
-/**
- * Props for {@link FloatingButton}.
- */
+/** Props for {@link FloatingButton}. */
 export interface FloatingButtonProps {
   /** Called when the button is clicked. */
   onClick: () => void
-  /** Accessible label for the button. */
+  /** Screen-reader label for the button. @default 'Open coordinate converter' */
   label?: string
-  /** Whether the conversion form panel is currently open. */
+  /** Controls the icon and visual state — `true` shows the close (X) icon. */
   isFormOpen?: boolean
 }
 
 /**
- * A circular floating action button positioned in the top-right corner.
- * Shows a Plus icon when the form is closed and an X when it is open.
+ * Circular floating action button in the top-right corner of the map.
+ *
+ * - When closed: white background, `Plus` icon, animated pulse ring.
+ * - When open: dark background, `X` icon, no pulse.
  */
 export function FloatingButton({
   onClick,
@@ -23,7 +23,7 @@ export function FloatingButton({
 }: FloatingButtonProps) {
   return (
     <div className="absolute right-4 top-4 z-10">
-      {/* Pulse ring — only when closed */}
+      {/* Pulse ring — only visible when the form is closed */}
       {!isFormOpen && (
         <span
           aria-hidden="true"
@@ -47,15 +47,9 @@ export function FloatingButton({
         ].join(' ')}
       >
         {isFormOpen ? (
-          <X
-            aria-hidden="true"
-            className="h-5 w-5 text-white transition-colors duration-300"
-          />
+          <X aria-hidden="true" className="h-5 w-5 text-white" />
         ) : (
-          <Plus
-            aria-hidden="true"
-            className="h-5 w-5 text-black transition-colors duration-300"
-          />
+          <Plus aria-hidden="true" className="h-5 w-5 text-black" />
         )}
       </button>
     </div>

@@ -1,31 +1,29 @@
 import type { ChangeEvent } from 'react'
-import type { DMSValue } from '../../types/coordinate'
-import { Input, Select, Label } from '../ui'
+import type { DMSValue } from '../../../types/coordinate'
+import { Input, Select, Label } from '../../ui'
 
-/**
- * Props for {@link DmsFieldGroup}.
- */
+/** Props for {@link DmsFieldGroup}. */
 export interface DmsFieldGroupProps {
   /** Field label, e.g. "Latitude" or "Longitude". */
   label: string
   /** Current degrees/minutes/seconds value. */
   value: DMSValue
-  /** Called with the updated value whenever any sub-field changes. */
+  /** Called with the updated partial value whenever a sub-field changes. */
   onChange: (value: DMSValue) => void
-  /** Direction selector value, e.g. "N" or "E". */
+  /** Current compass direction, e.g. "N" or "E". */
   direction: string
-  /** Available direction options, e.g. ["N", "S"]. */
+  /** Options shown in the direction selector, e.g. ["N", "S"]. */
   directionOptions: readonly string[]
   /** Called when the direction selector changes. */
   onDirectionChange: (direction: string) => void
 }
 
 /**
- * A labeled group of Degrees / Minutes / Seconds inputs plus a
- * compass-direction selector for one DMS axis (latitude or longitude).
+ * Input group for one DMS axis (latitude or longitude).
  *
- * Each sub-field has its own `<Label>` so the layout is self-documenting
- * and accessible without extra ARIA attributes.
+ * Renders Degrees, Minutes, Seconds, and Direction in a 4-column grid
+ * inside a `<fieldset>` so screen readers associate all inputs with
+ * the axis label.
  */
 export function DmsFieldGroup({
   label,
@@ -35,8 +33,13 @@ export function DmsFieldGroup({
   directionOptions,
   onDirectionChange,
 }: DmsFieldGroupProps) {
+  // Use the label as a stable ID prefix to connect <Label> and <Input>.
   const id = label.toLowerCase()
 
+  /**
+   * Returns a change handler for the given DMS field.
+   * Falls back to 0 if the user clears the input.
+   */
   const handleFieldChange =
     (field: keyof DMSValue) => (event: ChangeEvent<HTMLInputElement>) => {
       const numeric = Number(event.target.value)
@@ -45,12 +48,10 @@ export function DmsFieldGroup({
 
   return (
     <fieldset className="space-y-2 rounded-md border border-zinc-800 p-3">
-      {/* Section title */}
       <legend className="px-1">
         <Label>{label}</Label>
       </legend>
 
-      {/* 4-column grid: Deg | Min | Sec | Dir */}
       <div className="grid grid-cols-4 gap-2">
         {/* Degrees */}
         <div className="space-y-1.5">

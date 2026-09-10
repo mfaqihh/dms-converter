@@ -1,9 +1,7 @@
 import type { ChangeEvent } from 'react'
-import { Input, Label } from '../ui'
+import { Input, Label } from '../../ui'
 
-/**
- * Props for {@link DdFieldGroup}.
- */
+/** Props for {@link DdFieldGroup}. */
 export interface DdFieldGroupProps {
   /** Field label, e.g. "Latitude" or "Longitude". */
   label: string
@@ -14,8 +12,8 @@ export interface DdFieldGroupProps {
 }
 
 /**
- * A labeled decimal-degree number input for one DD axis
- * (latitude or longitude) in the conversion form.
+ * Input field for one DD (Decimal Degrees) axis.
+ * Falls back to `0` if the user clears the input.
  */
 export function DdFieldGroup({ label, value, onChange }: DdFieldGroupProps) {
   const id = `dd-${label.toLowerCase()}`

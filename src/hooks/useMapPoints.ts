@@ -1,11 +1,21 @@
 import { useState } from 'react'
 import type { DDCoordinate, MapPoint } from '../types/coordinate'
 
+/** Return type of {@link useMapPoints}. */
+interface UseMapPointsReturn {
+  /** All currently saved map points. */
+  points: MapPoint[]
+  /** Adds a new point at the given coordinate. Returns its generated id. */
+  addPoint: (coordinate: DDCoordinate) => string
+  /** Updates the coordinate of an existing point identified by id. */
+  updatePoint: (id: string, coordinate: DDCoordinate) => void
+}
+
 /**
  * Manages the list of saved {@link MapPoint} markers: adding new
  * points and updating an existing point's coordinate in place.
  */
-export function useMapPoints() {
+export function useMapPoints(): UseMapPointsReturn {
   const [points, setPoints] = useState<MapPoint[]>([])
 
   /**

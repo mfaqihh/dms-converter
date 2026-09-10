@@ -4,6 +4,13 @@ import { ChevronDown } from 'lucide-react'
 
 export type SelectProps = SelectHTMLAttributes<HTMLSelectElement>
 
+/**
+ * Styled select dropdown with a custom chevron icon.
+ *
+ * The native `appearance-none` hides the browser's default arrow; the
+ * `ChevronDown` icon is rendered as a pointer-events-none overlay so
+ * clicks still reach the underlying `<select>`.
+ */
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ className = '', children, ...props }, ref) => (
     <div className="relative w-full">

@@ -1,29 +1,40 @@
 import { forwardRef } from 'react'
 import type { ButtonHTMLAttributes } from 'react'
 
+/** Visual style of the button. */
 type Variant = 'default' | 'outline' | 'ghost'
+
+/** Size preset — controls height and horizontal padding. */
 type Size = 'sm' | 'md' | 'lg'
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /** @default 'default' */
   variant?: Variant
+  /** @default 'md' */
   size?: Size
 }
 
+/** Tailwind classes per variant. */
 const variantClass: Record<Variant, string> = {
-  default:
-    'bg-white text-black hover:bg-zinc-100 shadow-sm',
+  default: 'bg-white text-black hover:bg-zinc-100 shadow-sm',
   outline:
     'border border-zinc-700 bg-transparent text-white hover:bg-zinc-800 hover:border-zinc-600',
-  ghost:
-    'bg-transparent text-zinc-400 hover:bg-zinc-800 hover:text-white',
+  ghost: 'bg-transparent text-zinc-400 hover:bg-zinc-800 hover:text-white',
 }
 
+/** Tailwind classes per size. */
 const sizeClass: Record<Size, string> = {
   sm: 'h-8 px-3 text-xs',
   md: 'h-9 px-4 text-sm',
   lg: 'h-10 px-5 text-sm',
 }
 
+/**
+ * Reusable button with three visual variants (`default`, `outline`, `ghost`)
+ * and three sizes (`sm`, `md`, `lg`).
+ *
+ * Defaults to `type="button"` to prevent accidental form submission.
+ */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {

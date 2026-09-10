@@ -1,15 +1,19 @@
 /**
  * Compass direction for a latitude value.
+ * `'N'` = north (positive), `'S'` = south (negative).
  */
 export type LatDirection = 'N' | 'S'
 
 /**
  * Compass direction for a longitude value.
+ * `'E'` = east (positive), `'W'` = west (negative).
  */
 export type LonDirection = 'E' | 'W'
 
 /**
- * A geographic coordinate expressed in DMS (Degrees, Minutes, Seconds) format.
+ * A single axis value expressed in DMS (Degrees, Minutes, Seconds) format.
+ * Direction is intentionally omitted here — it is added as an intersection
+ * type where needed (e.g. {@link DMSCoordinate}).
  */
 export interface DMSValue {
   degrees: number
@@ -18,8 +22,8 @@ export interface DMSValue {
 }
 
 /**
- * A full DMS coordinate pair (latitude + longitude), each with its own
- * degrees/minutes/seconds and compass direction.
+ * A full DMS coordinate pair for latitude and longitude, each
+ * carrying its own compass direction.
  */
 export interface DMSCoordinate {
   latitude: DMSValue & { direction: LatDirection }
@@ -27,9 +31,11 @@ export interface DMSCoordinate {
 }
 
 /**
- * A geographic coordinate expressed in Decimal Degrees (DD) format.
- * Positive latitude = North, negative = South.
- * Positive longitude = East, negative = West.
+ * A geographic coordinate in Decimal Degrees (DD).
+ * - Positive latitude  → North hemisphere
+ * - Negative latitude  → South hemisphere
+ * - Positive longitude → East of the prime meridian
+ * - Negative longitude → West of the prime meridian
  */
 export interface DDCoordinate {
   latitude: number
@@ -37,8 +43,8 @@ export interface DDCoordinate {
 }
 
 /**
- * A saved point/marker on the map, combining a DD coordinate with
- * metadata used to render and manage it.
+ * A saved marker on the map, linking a unique ID to a DD coordinate.
+ * The optional `label` is reserved for future display use.
  */
 export interface MapPoint {
   id: string
@@ -46,7 +52,5 @@ export interface MapPoint {
   label?: string
 }
 
-/**
- * Which conversion direction the form is currently operating in.
- */
+/** The active conversion direction of the form. */
 export type ConversionMode = 'DMS_TO_DD' | 'DD_TO_DMS'
