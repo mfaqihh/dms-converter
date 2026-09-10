@@ -2,26 +2,23 @@
 
 Sebuah aplikasi web Front-End modern untuk mengonversi koordinat geografis antara format **Decimal Degrees (DD)** dan **Degrees, Minutes, Seconds (DMS)** secara presisi. Proyek ini dilengkapi dengan peta interaktif menggunakan OpenLayers untuk memvisualisasikan titik koordinat dan memilih koordinat langsung dari peta.
 
-Dibangun sebagai tugas *Technical Test* untuk posisi *Front-End Developer Internship*, dengan penekanan pada *Clean Code*, komponen yang *reusable*, serta validasi input yang kuat.
 
 ## Fitur Utama
 
 - **Konversi Dua Arah**: Mengonversi dari format DD ke DMS dan sebaliknya dengan akurat.
+- **Penanda Lokasi**: Penanda lokasi untuk menandai titik koordinat pada peta.
 - **Integrasi Peta Interaktif**: Didukung oleh OpenLayers untuk melihat titik koordinat pada peta, klik pada peta untuk mengisi otomatis form koordinat, dan melihat perubahan secara *real-time*.
-- **Validasi Input yang Kuat (Robust)**: Validasi *real-time* untuk mencegah input koordinat yang tidak valid (misalnya garis lintang yang melebihi ±90°, menit/detik di luar batas, serta kasus khusus seperti kutub/batas penanggalan internasional).
-- **UI/UX Premium**: Didesain menggunakan komponen UI primitif *reusable* bergaya Shadcn, ikon Lucide, serta tema *monochrome dark* yang elegan untuk memberikan kesan profesional.
-- **Arsitektur Clean Code**: Mematuhi prinsip-prinsip *Clean Code* secara ketat dengan menggunakan React, TypeScript, dan aturan *linter* (ESLint) yang sangat ketat.
-- **Berbasis Pengujian (Test-Driven)**: Terdapat *unit tests* yang komprehensif untuk memastikan logika inti konversi koordinat dan batasan validasinya berjalan sempurna.
+- **Validasi Input**: Validasi *real-time* untuk mencegah input koordinat yang tidak valid (misalnya garis lintang yang melebihi ±90°, menit/detik di luar batas, serta kasus khusus seperti kutub/batas penanggalan internasional).
 
 ## Teknologi yang Digunakan (Tech Stack)
 
-- **Framework:** React 18 dengan TypeScript
+- **Framework:** React dengan TypeScript
 - **Build Tool:** Vite
-- **Styling:** Tailwind CSS (Komponen kustom bergaya Shadcn)
-- **Map:** OpenLayers (`ol`)
+- **Styling:** Tailwind CSS
+- **Map:** OpenLayers
 - **Icons:** Lucide React
 - **Testing:** Jest, ts-jest, dan React Testing Library
-- **Linting & Formatting:** ESLint (Aturan TypeScript ketat) dan Prettier
+- **Formatting:** ESLint dan Prettier
 
 ## Persyaratan Sistem
 
@@ -38,12 +35,12 @@ Ikuti langkah-langkah sederhana berikut untuk menjalankan proyek ini di komputer
 ### 1. Clone repository
 Buka terminal Anda, *clone* proyek ini, lalu masuk ke direktori proyek:
 ```bash
-git clone <url-repository-anda>
+git clone <url git>
 cd dms-converter
 ```
 *(Catatan: Ganti `<url-repository-anda>` dengan URL Git yang sebenarnya dari proyek ini)*
 
-### 2. Install dependencies (ketergantungan)
+### 2. Install dependencies
 Instal semua paket yang dibutuhkan menggunakan npm:
 ```bash
 npm install
@@ -77,7 +74,7 @@ npm run test
 
 ---
 
-## Linting & Kualitas Kode
+## Code quality
 
 Proyek ini menerapkan *type-checking* TypeScript yang sangat ketat (termasuk *explicit return types*) serta standar *Clean Code*.
 
@@ -98,11 +95,11 @@ src/
 │   ├── ConversionForm/    # Logika konversi utama (DMS ke DD & DD ke DMS)
 │   ├── FloatingButton/    # Tombol UI untuk membuka/menutup panel form
 │   ├── Map/               # Integrasi OpenLayers Map (MapView)
-│   └── ui/                # Primitif UI reusable bergaya Shadcn (Input, Button, Select)
+│   └── ui/                # UI reusable (Input, Button, Select)
 ├── hooks/                 # Custom React hooks (contoh: useMapPoints)
 ├── types/                 # Interface global TypeScript (DDCoordinate, DMSCoordinate)
-├── utils/                 # Fungsi murni (pure) untuk algoritma konversi dan validasi
-├── __tests__/             # Kumpulan unit test Jest
+├── utils/                 # Algoritma konversi dan validasi
+├── __tests__/             # Unit test Jest
 ├── App.tsx                # Orkestrator utama yang menghubungkan Map dan Form
-└── main.tsx               # Titik masuk (entry point) aplikasi
+└── main.tsx               # Entry point aplikasi
 ```
