@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import type { DDCoordinate, DMSCoordinate } from '../../../types/coordinate'
 import { dmsToDD, formatDD } from '../../../utils/coordinateConversion'
+import { validateDMSLatitude, validateDMSLongitude } from '../../../utils/coordinateValidation'
 import { DmsFieldGroup } from './DmsFieldGroup'
 import { ResultRow } from '../ResultRow'
 import { Button, Separator } from '../../ui'
 import { MapPin } from 'lucide-react'
 
 const DEFAULT_DMS: DMSCoordinate = {
-  latitude: { degrees: 90, minutes: 0, seconds: 0, direction: 'N' },
-  longitude: { degrees: 33, minutes: 13, seconds: 48, direction: 'E' },
+  latitude: { degrees: 0, minutes: 0, seconds: 0, direction: 'N' },
+  longitude: { degrees: 0, minutes: 0, seconds: 0, direction: 'E' },
 }
 
 /** Props for {@link DmsToDdForm}. */
@@ -25,19 +26,25 @@ export interface DmsToDdFormProps {
 /**
  * Self-contained form for converting DMS → DD.
  *
- * Owns its own input state and conversion result. Calls `onAddToMaps`
- * with the resulting {@link DDCoordinate} when the user confirms.
+ * Validates inputs live — the Convert button is disabled while any field
+ * is invalid and inline error messages are shown near the offending field.
  */
 export function DmsToDdForm({ onAddToMaps, isEditing = false }: DmsToDdFormProps) {
   const [dmsInput, setDmsInput] = useState<DMSCoordinate>(DEFAULT_DMS)
   const [result, setResult] = useState<DDCoordinate | null>(null)
 
+  // Derived validation — recomputed on every render, no extra state needed.
+  const latError = validateDMSLatitude(dmsInput.latitude)
+  const lonError = validateDMSLongitude(dmsInput.longitude)
+  const isValid = !latError && !lonError
+
   const handleConvert = () => {
+    if (!isValid) return
     setResult(dmsToDD(dmsInput))
   }
 
   const handleAddToMaps = () => {
-    // If the user clicks Add before Convert, compute on the fly.
+    if (!isValid) return
     const coordinate = result ?? dmsToDD(dmsInput)
     onAddToMaps(coordinate)
     setResult(null)
@@ -54,6 +61,7 @@ export function DmsToDdForm({ onAddToMaps, isEditing = false }: DmsToDdFormProps
         value={dmsInput.latitude}
         direction={dmsInput.latitude.direction}
         directionOptions={['N', 'S']}
+        error={latError ?? undefined}
         onChange={(v) =>
           setDmsInput((prev) => ({ ...prev, latitude: { ...prev.latitude, ...v } }))
         }
@@ -70,6 +78,7 @@ export function DmsToDdForm({ onAddToMaps, isEditing = false }: DmsToDdFormProps
         value={dmsInput.longitude}
         direction={dmsInput.longitude.direction}
         directionOptions={['E', 'W']}
+        error={lonError ?? undefined}
         onChange={(v) =>
           setDmsInput((prev) => ({ ...prev, longitude: { ...prev.longitude, ...v } }))
         }
@@ -81,7 +90,13 @@ export function DmsToDdForm({ onAddToMaps, isEditing = false }: DmsToDdFormProps
         }
       />
 
-      <Button className="w-full" size="md" onClick={handleConvert}>
+      <Button
+        className="w-full"
+        size="md"
+        onClick={handleConvert}
+        disabled={!isValid}
+        title={!isValid ? 'Fix the errors above before converting' : undefined}
+      >
         Convert
       </Button>
 

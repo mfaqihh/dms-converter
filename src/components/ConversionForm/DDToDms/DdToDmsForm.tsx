@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import type { DDCoordinate, DMSCoordinate } from '../../../types/coordinate'
 import { ddToDMS, formatDMS } from '../../../utils/coordinateConversion'
+import { validateDDLatitude, validateDDLongitude } from '../../../utils/coordinateValidation'
 import { DdFieldGroup } from './DdFieldGroup'
 import { ResultRow } from '../ResultRow'
 import { Button, Separator } from '../../ui'
 import { MapPin } from 'lucide-react'
 
-const DEFAULT_DD: DDCoordinate = { latitude: 90, longitude: 33.23 }
+const DEFAULT_DD: DDCoordinate = { latitude: 0, longitude: 0 }
 
 /** Props for {@link DdToDmsForm}. */
 export interface DdToDmsFormProps {
@@ -27,9 +28,9 @@ export interface DdToDmsFormProps {
 /**
  * Self-contained form for converting DD → DMS.
  *
- * Owns its own input state and conversion result. The coordinate passed
- * to `onAddToMaps` is always the original DD input — the DMS output is
- * shown purely for reference.
+ * Validates inputs live — the Convert button is disabled while any field
+ * is out of range and inline error messages appear near the offending field.
+ * The coordinate sent to `onAddToMaps` is always the original DD input.
  */
 export function DdToDmsForm({
   prefill,
@@ -39,11 +40,18 @@ export function DdToDmsForm({
   const [ddInput, setDdInput] = useState<DDCoordinate>(prefill ?? DEFAULT_DD)
   const [result, setResult] = useState<DMSCoordinate | null>(null)
 
+  // Derived validation — recomputed on every render, no extra state needed.
+  const latError = validateDDLatitude(ddInput.latitude)
+  const lonError = validateDDLongitude(ddInput.longitude)
+  const isValid = !latError && !lonError
+
   const handleConvert = () => {
+    if (!isValid) return
     setResult(ddToDMS(ddInput))
   }
 
   const handleAddToMaps = () => {
+    if (!isValid) return
     // Always send the DD input to the map — DMS is for display only.
     onAddToMaps(ddInput)
     setResult(null)
@@ -58,16 +66,24 @@ export function DdToDmsForm({
       <DdFieldGroup
         label="Latitude"
         value={ddInput.latitude}
+        error={latError ?? undefined}
         onChange={(v) => setDdInput((prev) => ({ ...prev, latitude: v }))}
       />
 
       <DdFieldGroup
         label="Longitude"
         value={ddInput.longitude}
+        error={lonError ?? undefined}
         onChange={(v) => setDdInput((prev) => ({ ...prev, longitude: v }))}
       />
 
-      <Button className="w-full" size="md" onClick={handleConvert}>
+      <Button
+        className="w-full"
+        size="md"
+        onClick={handleConvert}
+        disabled={!isValid}
+        title={!isValid ? 'Fix the errors above before converting' : undefined}
+      >
         Convert
       </Button>
 

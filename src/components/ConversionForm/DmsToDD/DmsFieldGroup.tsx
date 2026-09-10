@@ -16,14 +16,19 @@ export interface DmsFieldGroupProps {
   directionOptions: readonly string[]
   /** Called when the direction selector changes. */
   onDirectionChange: (direction: string) => void
+  /**
+   * Validation error message to display below the inputs.
+   * When set, the fieldset border turns red.
+   */
+  error?: string
 }
 
 /**
  * Input group for one DMS axis (latitude or longitude).
  *
  * Renders Degrees, Minutes, Seconds, and Direction in a 4-column grid
- * inside a `<fieldset>` so screen readers associate all inputs with
- * the axis label.
+ * inside a `<fieldset>`. Pass an `error` string to show inline validation
+ * feedback and highlight the border in red.
  */
 export function DmsFieldGroup({
   label,
@@ -32,6 +37,7 @@ export function DmsFieldGroup({
   direction,
   directionOptions,
   onDirectionChange,
+  error,
 }: DmsFieldGroupProps) {
   // Use the label as a stable ID prefix to connect <Label> and <Input>.
   const id = label.toLowerCase()
@@ -47,7 +53,12 @@ export function DmsFieldGroup({
     }
 
   return (
-    <fieldset className="space-y-2 rounded-md border border-zinc-800 p-3">
+    <fieldset
+      className={[
+        'space-y-2 rounded-md border p-3 transition-colors',
+        error ? 'border-red-500/60' : 'border-zinc-800',
+      ].join(' ')}
+    >
       <legend className="px-1">
         <Label>{label}</Label>
       </legend>
@@ -64,7 +75,7 @@ export function DmsFieldGroup({
               value={value.degrees}
               min={0}
               onChange={handleFieldChange('degrees')}
-              className="pr-5 text-right"
+              className={`pr-5 text-right ${error ? 'border-red-500/60 focus-visible:ring-red-500' : ''}`}
             />
             <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-600">
               °
@@ -84,7 +95,7 @@ export function DmsFieldGroup({
               min={0}
               max={59}
               onChange={handleFieldChange('minutes')}
-              className="pr-5 text-right"
+              className={`pr-5 text-right ${error ? 'border-red-500/60 focus-visible:ring-red-500' : ''}`}
             />
             <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-600">
               ′
@@ -105,7 +116,7 @@ export function DmsFieldGroup({
               max={59.999}
               step={0.001}
               onChange={handleFieldChange('seconds')}
-              className="pr-5 text-right"
+              className={`pr-5 text-right ${error ? 'border-red-500/60 focus-visible:ring-red-500' : ''}`}
             />
             <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-600">
               ″
@@ -130,6 +141,13 @@ export function DmsFieldGroup({
           </Select>
         </div>
       </div>
+
+      {/* Inline validation error */}
+      {error && (
+        <p role="alert" className="text-xs text-red-400">
+          {error}
+        </p>
+      )}
     </fieldset>
   )
 }

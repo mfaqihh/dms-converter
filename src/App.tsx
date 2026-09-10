@@ -56,7 +56,7 @@ function App() {
           </span>
           <div>
             <p className="text-sm font-bold leading-none text-white">DMS Converter</p>
-            <p className="mt-0.5 text-[10px] leading-none text-zinc-400">OpenLayers</p>
+            <p className="mt-0.5 text-[10px] leading-none text-zinc-400">Integrated to OpenLayers</p>
           </div>
         </div>
 
